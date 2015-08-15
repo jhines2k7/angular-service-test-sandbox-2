@@ -1,22 +1,29 @@
 describe('A simple service', function(){
-  var simpleService, httpBackend, scope;
+  var simpleService, scope, q;
 
   beforeEach(function(){
     module('service')
   });
 
-  beforeEach(inject(function(SimpleService, $httpBackend){
-    httpBackend = $httpBackend;
-
+  beforeEach(inject(function(SimpleService, $q, $rootScope){
     simpleService = SimpleService;
+    q = $q;
+    scope = $rootScope.$new();
   }));
 
   it('should call the weather service api', function(){
-    httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=London,uk')
-      .respond({
-        one: 'one',
-        two: 'two'
+    spyOn(simpleService, 'getWeather').and.callFake(function(){
+      var deferred = q.defer();
+
+      deferred.resolve({
+        data: {
+          one: 'one',
+          two: 'two'
+        }
       });
+
+      return deferred.promise;
+    });
 
     var weather = {};
 
@@ -24,7 +31,7 @@ describe('A simple service', function(){
       weather = response.data;
     });
 
-    httpBackend.flush();
+    scope.$digest();
 
     expect(weather).toEqual({
       one: 'one',
@@ -33,8 +40,15 @@ describe('A simple service', function(){
   });
 
   it('should report any errors', function(){
-    httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=London,uk')
-      .respond(500, '', '', 'Internal server error');
+    spyOn(simpleService, 'getWeather').and.callFake(function(){
+      var deferred = q.defer();
+
+      deferred.reject({
+        statusText: 'Internal server error'
+      });
+
+      return deferred.promise;
+    });
 
     var weather = {};
 
@@ -46,7 +60,7 @@ describe('A simple service', function(){
         weather = err.statusText;
       });
 
-    httpBackend.flush();
+    scope.$digest();
 
     expect(weather).toEqual('Internal server error');
   })

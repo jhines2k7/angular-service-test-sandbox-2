@@ -1,29 +1,34 @@
 describe('A simple controller', function(){
-  var controller, scope, httpBackend;
+  var controller, scope, q;
 
   beforeEach(function(){
     module('controller', 'service');
   });
 
-  beforeEach(inject(function($controller, $rootScope, $httpBackend){
+  beforeEach(inject(function($controller, $rootScope, SimpleService, $q){
     scope = $rootScope.$new();
+    q = $q;
 
-    httpBackend = $httpBackend;
+    spyOn(SimpleService, 'getWeather').and.callFake(function(){
+      var deferred = q.defer();
 
-    $httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=London,uk')
-      .respond({
-        one: 'one',
-        two: 'two'
+      deferred.resolve({
+        data: {
+          one: 'one',
+          two: 'two'
+        }
       });
+
+      return deferred.promise;
+    });
 
     controller = $controller('SimpleController', {
       $scope: scope
-      //SimpleService: SimpleService
     })
   }));
 
   it('should make a call to an api using the SimpleService', function(){
-    httpBackend.flush();
+    scope.$digest();
 
     expect(scope.weather).toEqual({
       one: 'one',
