@@ -1,0 +1,22 @@
+{
+  "name": "angular-service-test-sandbox",
+  "version": "0.0.0",
+  "authors": [
+    "James Hines <jameshines10@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.4",
+    "restangular": "~1.5.1"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.4.4"
+  }
+}
