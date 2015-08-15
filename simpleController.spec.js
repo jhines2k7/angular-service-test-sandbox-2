@@ -5,7 +5,7 @@ describe('A simple controller', function(){
     module('controller', 'service');
   });
 
-  beforeEach(inject(function($controller, $rootScope, SimpleService, $httpBackend){
+  beforeEach(inject(function($controller, $rootScope, $httpBackend){
     scope = $rootScope.$new();
 
     httpBackend = $httpBackend;
@@ -17,14 +17,12 @@ describe('A simple controller', function(){
       });
 
     controller = $controller('SimpleController', {
-      $scope: scope,
-      SimpleService: SimpleService
+      $scope: scope
+      //SimpleService: SimpleService
     })
   }));
 
   it('should make a call to an api using the SimpleService', function(){
-    //scope.$digest();
-
     httpBackend.flush();
 
     expect(scope.weather).toEqual({
